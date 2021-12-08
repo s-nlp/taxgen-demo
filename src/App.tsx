@@ -1,10 +1,10 @@
 import Layout from "./Layout";
-import Taxonomy from "./Taxonomy";
+import TaxonomyController from "./taxonomy/TaxonomyController";
 
 export default function App() {
   return (
     <Layout>
-      <Taxonomy/>
+      <TaxonomyController/>
     </Layout>
   );
 }
