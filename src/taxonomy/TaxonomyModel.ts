@@ -3,44 +3,66 @@ import { Taxonomy } from "./TaxonomyDTO";
 
 export default function TaxonomyModel() {
     const data = {
-        currentWord: 3,
-        words: [
-            { id: 1, word: "word 1" },
-            { id: 2, word: "word 2" },
-            { id: 3, word: "word 3" },
-            { id: 4, word: "word 4" },
-            { id: 5, word: "word 5" },
-        ],
-        relations: [
-            { parent: 1, child: 3 },
-            { parent: 1, child: 2 },
-            { parent: 2, child: 4 },
-            { parent: 2, child: 5 },
-        ]
+        currentWord: '',
+        words: [],
+        relations: []
     };
-
     const taxonomy$ = new BehaviorSubject<Taxonomy>(data);
 
-    function navigateToWord(id: number) {
-        setTimeout(() => {
-            const prev = taxonomy$.value;
-            taxonomy$.next({
-                currentWord: id,
-                words: prev.words,
-                relations: prev.relations
-            });
-        }, 500);
+    setTimeout(async () => {
+        const currentWord = localStorage.getItem('currentWord');
+
+        if (!currentWord) {
+            taxonomy$.next(await fetchGraphForRoot());
+        } else {
+            taxonomy$.next(await fetchGraphForWord(currentWord));
+        }
+    });
+
+    function navigateToRoot() {
+        localStorage.removeItem('currentWord');
+
+        setTimeout(async() => {
+            taxonomy$.next(await fetchGraphForRoot());
+        });
+    }
+
+    function navigateToWord(id: string) {
+        localStorage.setItem('currentWord', id);
+
+        setTimeout(async () => {
+            taxonomy$.next(await fetchGraphForWord(id));
+        });
+    }
+
+    async function fetchGraphForRoot() {
+        const response = await fetch('/initial');
+        return await response.json();
+    }
+
+    async function fetchGraphForWord(id: string) {
+        const body = JSON.stringify({
+            start_node: id
+        });
+        const response = await fetch('/centered', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        });
+        return await response.json();
     }
 
     function generateWords() {
         setTimeout(() => {
             const prev = taxonomy$.value;
-            const newId = prev.words.length + 1;
+            const newId = (prev.words.length + 1).toString();
             taxonomy$.next({
                 currentWord: prev.currentWord,
                 words: [
                     ...prev.words,
-                    {id: newId, word: `word ${newId}`}
+                    {id: newId, word: `word ${newId}`, level: 10}
                 ],
                 relations: [
                     ...prev.relations,
@@ -52,6 +74,7 @@ export default function TaxonomyModel() {
 
     return {
         taxonomy$,
+        navigateToRoot,
         navigateToWord,
         generateWords
     };

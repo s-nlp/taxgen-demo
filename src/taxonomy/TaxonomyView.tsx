@@ -5,12 +5,13 @@ import { Taxonomy } from "./TaxonomyDTO";
 
 export interface TaxonomyViewProps {
   taxonomy: Taxonomy;
-  navigateToWord: (id: number) => void;
+  navigateToRoot: () => void;
+  navigateToWord: (id: string) => void;
   generateWords: () => void;
 }
 
 export default function TaxonomyView(props: TaxonomyViewProps) {
-    const {taxonomy, navigateToWord, generateWords} = props;
+    const {taxonomy, navigateToRoot, navigateToWord, generateWords} = props;
     const {currentWord, words, relations} = taxonomy;
 
     const ref = useRef<HTMLDivElement>(null);
@@ -25,7 +26,8 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
             label: w.word,
             color: {
               background: (w.id === currentWord) ? '#FF8888' : '#D2E5FF'
-            }
+            },
+            level: w.level
           };
         })
       );
@@ -46,7 +48,21 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
             arrows: 'to'
         },
         height: '800px',
-        width: '800px'
+        width: '1600px',
+        layout: {
+          hierarchical: {
+            enabled: true,
+            direction: 'UD',
+            sortMethod: 'directed'
+          }
+        },
+        physics: {
+          enabled: false
+        },
+        interaction: {
+          dragNodes :false
+        },
+        clickToUse: false
       };
       
       const network = new Network(ref.current, data, options);
@@ -67,5 +83,12 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       }
     }, [currentWord, words, relations, navigateToWord, generateWords]);
   
-    return (<div ref={ref}/>);
+    return (<>
+      <h1>
+        Taxonomy
+        <br/>
+        <button onClick={navigateToRoot}>Back to root</button>
+      </h1>
+      <div ref={ref}/>
+    </>);
 }

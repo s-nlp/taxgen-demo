@@ -1,16 +1,17 @@
 
 export interface Taxonomy {
-    currentWord: number;
+    currentWord: string;
     words: Word[];
     relations: Relation[];
 }
 
 export interface Word {
-    id: number;
+    id: string;
     word: string;
+    level: number;
 }
 
 export interface Relation {
-    parent: number;
-    child: number;
+    parent: string;
+    child: string;
 }

@@ -7,7 +7,6 @@ export interface LayoutProps {
 export default function Layout({children}: LayoutProps) {
     return (
       <div>
-        <h1>Taxonomy</h1>
         {children}
       </div>
     );
