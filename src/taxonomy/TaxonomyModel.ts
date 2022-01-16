@@ -36,7 +36,7 @@ export default function TaxonomyModel() {
     }
 
     async function fetchGraphForRoot() {
-        const response = await fetch('/initial');
+        const response = await fetch('/api/initial');
         return await response.json();
     }
 
@@ -44,7 +44,7 @@ export default function TaxonomyModel() {
         const body = JSON.stringify({
             start_node: id
         });
-        const response = await fetch('/centered', {
+        const response = await fetch('/api/centered', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
