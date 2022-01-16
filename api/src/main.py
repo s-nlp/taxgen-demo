@@ -2,18 +2,8 @@
 from flask import Flask, jsonify, request, abort
 import fasttext
 from nltk.corpus import wordnet as wn
-import wget
-import gzip
-import shutil
-
 from helpers import get_graph_with_node, predict_new_nodes
 
-
-wget.download("https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz")
-
-with gzip.open('cc.en.300.bin.gz', 'rb') as f_in:
-    with open('cc.en.300.bin', 'wb') as f_out:
-        shutil.copyfileobj(f_in, f_out)
 
 ft = fasttext.load_model("cc.en.300.bin")
 
