@@ -17,7 +17,14 @@ def get_graph_with_node(start_node):
     return {
         'currentWord': start_node,
         'words': [
-            {'id': node, 'word': node, 'level': level}
+            {
+            'id': node, 
+            'word': node, 
+            'level': level, 
+            'definition': wn.synset(node).definition(), 
+            'lemmas': [i.name() for i in wn.synset(node).lemmas()],
+            'image': ''
+            }
             for (node, level) in all_nodes
         ],
         'relations': _get_relations([node for node, _ in all_nodes])
