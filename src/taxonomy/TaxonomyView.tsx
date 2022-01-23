@@ -32,7 +32,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
             id: w.id,
             label: w.word,
             color: {
-              background: (w.id === currentWord) ? '#FF8888' : '#D2E5FF'
+              background: (w.id === currentWord) ? '#8cffdd' : '#ccd1ff'
             },
             level: w.level
           };
@@ -51,8 +51,12 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       };
 
       const options = {
+        nodes: {
+          borderWidth: 0
+        },
         edges: {
-            arrows: 'to'
+            arrows: 'to',
+            color: '#3642b3'
         },
         height: '800px',
         width: '100%',
