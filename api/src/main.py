@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, send_file
 import fasttext
 from nltk.corpus import wordnet as wn
 from helpers import get_graph_with_node, predict_new_nodes
@@ -9,6 +9,12 @@ ft = fasttext.load_model("cc.en.300.bin")
 
 all_lemmas = list(wn.all_lemma_names('n'))
 app = Flask(__name__)
+
+
+@app.route('/images/<node_id>', methods=['GET'])
+def get_image(node_id):
+    filename = 'coton.jpeg'
+    return send_file(filename, mimetype='image/jpeg')
 
 
 @app.route('/initial', methods=['GET', 'POST'])

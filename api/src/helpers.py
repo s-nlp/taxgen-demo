@@ -14,7 +14,6 @@ def get_graph_with_node(start_node):
     co_hyponyms = [(j.name(), 3) for i, _ in hypernyms for j in wn.synset(i).hyponyms()]
 
     all_nodes = hyponyms + second_hyponyms + co_hypernyms + hypernyms + second_hypernyms + co_hyponyms
-    # all_nodes = [(node, level) for node, level in {node: level for node, level in all_nodes}.items()]
 
     nodes, relations = _get_relations(all_nodes)
 
@@ -27,7 +26,6 @@ def get_graph_with_node(start_node):
             'level': level, 
             'definition': wn.synset(node).definition(), 
             'lemmas': [i.name().replace("_", " ") for i in wn.synset(node).lemmas()],
-            'image': ''
             }
             for (node, level) in nodes.items()
         ],
