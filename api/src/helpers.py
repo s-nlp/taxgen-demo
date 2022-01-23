@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from nltk.corpus import wordnet as wn
 from string import punctuation
 
@@ -12,7 +14,9 @@ def get_graph_with_node(start_node):
     co_hyponyms = [(j.name(), 3) for i, _ in hypernyms for j in wn.synset(i).hyponyms()]
 
     all_nodes = hyponyms + second_hyponyms + co_hypernyms + hypernyms + second_hypernyms + co_hyponyms
-    all_nodes = [(node, level) for node, level in {node: level for node, level in all_nodes}.items()]
+    # all_nodes = [(node, level) for node, level in {node: level for node, level in all_nodes}.items()]
+
+    nodes, relations = _get_relations(all_nodes)
 
     return {
         'currentWord': start_node,
@@ -22,26 +26,38 @@ def get_graph_with_node(start_node):
             'word': node, 
             'level': level, 
             'definition': wn.synset(node).definition(), 
-            'lemmas': [i.name() for i in wn.synset(node).lemmas()],
+            'lemmas': [i.name().replace("_", " ") for i in wn.synset(node).lemmas()],
             'image': ''
             }
-            for (node, level) in all_nodes
+            for (node, level) in nodes.items()
         ],
-        'relations': _get_relations([node for node, _ in all_nodes])
+        'relations': relations
     }
 
 
 def _get_relations(all_nodes):
+    all_nodes = sorted(all_nodes, key=lambda x: x[1])
     graph = set()
+    nodes = defaultdict(lambda: -1)
 
-    for node1 in all_nodes:
-        for node2 in all_nodes:
+    for node1, level1 in all_nodes:
+        level1 = max(nodes[node1], level1)
+        for node2, level2 in all_nodes:
+            level2 = max(nodes[node2], level2)
             if wn.synset(node1) in wn.synset(node2).hypernyms():
                 graph.add((node1, node2))
+                if level1 == level2:
+                    level2 += 1
+
             elif wn.synset(node1) in wn.synset(node2).hyponyms():
                 graph.add((node2, node1))
+                if level1 == level2:
+                    level1 += 1
 
-    return [{'parent': parent, 'child': child} for (parent, child) in graph]
+            nodes[node1] = max(nodes[node1], level1)
+            nodes[node2] = max(nodes[node2], level2)
+
+    return nodes, [{'parent': parent, 'child': child} for (parent, child) in graph]
 
 
 def predict_new_nodes(fasttext_model, start_node, all_lemmas):
