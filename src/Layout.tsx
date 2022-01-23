@@ -1,4 +1,5 @@
 import { ReactElement } from "react";
+import Container from 'react-bootstrap/Container';
 
 export interface LayoutProps {
     children: ReactElement;
@@ -6,8 +7,8 @@ export interface LayoutProps {
 
 export default function Layout({children}: LayoutProps) {
     return (
-      <div>
+      <Container fluid>
         {children}
-      </div>
+      </Container>
     );
 }

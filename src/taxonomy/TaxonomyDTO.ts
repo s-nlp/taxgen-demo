@@ -9,6 +9,8 @@ export interface Word {
     id: string;
     word: string;
     level: number;
+    definition: string;
+    lemmas: string[];
 }
 
 export interface Relation {

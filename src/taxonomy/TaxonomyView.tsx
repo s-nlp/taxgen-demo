@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import { DataSet } from "vis-data";
-import { Network } from "vis-network";
+import { Network } from "vis-network/standalone/esm/vis-network";
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Taxonomy } from "./TaxonomyDTO";
 
 export interface TaxonomyViewProps {
@@ -13,6 +17,9 @@ export interface TaxonomyViewProps {
 export default function TaxonomyView(props: TaxonomyViewProps) {
     const {taxonomy, navigateToRoot, navigateToWord, generateWords} = props;
     const {currentWord, words, relations} = taxonomy;
+
+    const definition = words.filter((w) => w.id === currentWord).map((w) => w.definition)[0];
+    const lemmas = words.filter((w) => w.id === currentWord).map((w) => w.lemmas)[0];
 
     const ref = useRef<HTMLDivElement>(null);
 
@@ -48,7 +55,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
             arrows: 'to'
         },
         height: '800px',
-        width: '1600px',
+        width: '100%',
         layout: {
           hierarchical: {
             enabled: true,
@@ -60,7 +67,9 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           enabled: false
         },
         interaction: {
-          dragNodes :false
+          dragNodes :false,
+          navigationButtons: true,
+          keyboard: true
         },
         clickToUse: false
       };
@@ -86,9 +95,34 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
     return (<>
       <h1>
         Taxonomy
-        <br/>
-        <button onClick={navigateToRoot}>Back to root</button>
       </h1>
-      <div ref={ref}/>
+      <Row>
+        <Col xs={1}>
+          <Button onClick={navigateToRoot}>Back to root</Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={9}>
+          <div ref={ref}/>
+        </Col>
+        <Col>
+          {currentWord ?
+            <Card>
+              <Card.Img variant="top" src={`/api/images/${currentWord}.jpg`}/>
+              <Card.Body>
+                <Card.Title>{currentWord}</Card.Title>
+                <Card.Text>
+                  {lemmas.join(', ')}
+                </Card.Text>
+                <Card.Text>
+                  {definition}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+            :
+            <></>
+          }
+        </Col>
+      </Row>
     </>);
 }

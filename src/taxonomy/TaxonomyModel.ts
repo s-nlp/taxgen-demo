@@ -62,7 +62,7 @@ export default function TaxonomyModel() {
                 currentWord: prev.currentWord,
                 words: [
                     ...prev.words,
-                    {id: newId, word: `word ${newId}`, level: 10}
+                    {id: newId, word: `word ${newId}`, level: 10, lemmas: [], definition: ''}
                 ],
                 relations: [
                     ...prev.relations,
