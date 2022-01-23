@@ -31,9 +31,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           return {
             id: w.id,
             label: w.word,
-            color: {
-              background: (w.id === currentWord) ? '#8cffdd' : '#ccd1ff'
-            },
+            color: (w.id === currentWord) ? '#8cffdd' : '#ccd1ff',
             level: w.level
           };
         })
@@ -71,7 +69,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           enabled: false
         },
         interaction: {
-          dragNodes :false,
+          dragNodes: false,
           navigationButtons: true,
           keyboard: true
         },
