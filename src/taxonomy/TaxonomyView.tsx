@@ -78,6 +78,9 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
 
       network.on('doubleClick', (e) => {
         const id = e.nodes[0];
+        if (!id) {
+          return;
+        }
         if (id !== currentWord) {
           navigateToWord(id);
         } else {
