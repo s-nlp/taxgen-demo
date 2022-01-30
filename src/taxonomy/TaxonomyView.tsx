@@ -12,10 +12,11 @@ export interface TaxonomyViewProps {
   navigateToRoot: () => void;
   navigateToWord: (id: string) => void;
   generateWords: () => void;
+  regenerateGraph: () => void;
 }
 
 export default function TaxonomyView(props: TaxonomyViewProps) {
-    const {taxonomy, navigateToRoot, navigateToWord, generateWords} = props;
+    const {taxonomy, navigateToRoot, navigateToWord, generateWords, regenerateGraph} = props;
     const {currentWord, words, relations} = taxonomy;
 
     const definition = words.filter((w) => w.id === currentWord).map((w) => w.definition)[0];
@@ -104,6 +105,9 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       <Row>
         <Col xs={1}>
           <Button onClick={navigateToRoot}>Back to root</Button>
+        </Col>
+        <Col xs={1}>
+          <Button onClick={regenerateGraph}>Back to original graph</Button>
         </Col>
       </Row>
       <Row>

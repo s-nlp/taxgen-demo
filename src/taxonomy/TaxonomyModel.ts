@@ -2,46 +2,61 @@ import { BehaviorSubject } from "rxjs";
 import { Taxonomy } from "./TaxonomyDTO";
 
 export default function TaxonomyModel() {
-    const data = {
+    let token: string | null = null;
+
+    const data: Taxonomy = {
         currentWord: '',
         words: [],
         relations: []
     };
-    const taxonomy$ = new BehaviorSubject<Taxonomy>(data);
+    const taxonomy$ = new BehaviorSubject(data);
 
     setTimeout(async () => {
-        const currentWord = localStorage.getItem('currentWord');
-
-        if (!currentWord) {
-            taxonomy$.next(await fetchGraphForRoot());
-        } else {
-            taxonomy$.next(await fetchGraphForWord(currentWord));
-        }
+        await init();
     });
 
-    function navigateToRoot() {
-        localStorage.removeItem('currentWord');
+    async function init() {
+        const tok = localStorage.getItem('token');
+        if (tok) {
+            token = tok;
+        } else {
+            const tok = await generateToken();
+            localStorage.setItem('token', tok);
+            token = tok;
+        }
+        
+        setTimeout(async () => {
+            if (token === null) return;
+            const graph = await fetchCurrentGraphForToken(token);
+            taxonomy$.next(graph);
+        });
+    }
 
+    async function generateToken() {
+        const response = await fetch('/api/token', {method: 'POST'});
+        return await response.json();
+    }
+
+    async function fetchCurrentGraphForToken(token: string) {
+        const response = await fetch('/api/current?uid=' + token);
+        return await response.json();
+    }
+
+    function navigateToRoot() {
         setTimeout(async() => {
-            taxonomy$.next(await fetchGraphForRoot());
+            taxonomy$.next(await fetchGraphCenteredToWord(null));
         });
     }
 
     function navigateToWord(id: string) {
-        localStorage.setItem('currentWord', id);
-
         setTimeout(async () => {
-            taxonomy$.next(await fetchGraphForWord(id));
+            taxonomy$.next(await fetchGraphCenteredToWord(id));
         });
     }
 
-    async function fetchGraphForRoot() {
-        const response = await fetch('/api/initial');
-        return await response.json();
-    }
-
-    async function fetchGraphForWord(id: string) {
+    async function fetchGraphCenteredToWord(id: string | null) {
         const body = JSON.stringify({
+            uid: token,
             start_node: id
         });
         const response = await fetch('/api/centered', {
@@ -72,10 +87,18 @@ export default function TaxonomyModel() {
         }, 500);
     }
 
+    function regenerateGraph() {
+        setTimeout(async () => {
+            localStorage.removeItem('token');
+            await init();
+        });
+    }
+
     return {
         taxonomy$,
         navigateToRoot,
         navigateToWord,
-        generateWords
+        generateWords,
+        regenerateGraph
     };
 }

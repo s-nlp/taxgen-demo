@@ -12,48 +12,49 @@ all_lemmas = list(wn.all_lemma_names('n'))
 app = Flask(__name__)
 
 opened_sessions = {}
+root = "entity.n.01"
 
 
-@app.route('/token', methods=['GET', 'POST'])
+@app.post('/token')
 def get_new_session():
-    uid = str(uuid.uuid1())
-    get_initial_graph(uid)
+    uid = str(uuid.uuid4())
     return jsonify(uid)
 
 
-@app.route('/current/', methods=['GET', 'POST'])
-def get_current_position(uid=None):
-    if uid is None:
-        uid = request.args['uid']
-    return opened_sessions[uid]
+@app.get('/current')
+def get_current_graph():
+    uid = request.args['uid']
+    if not uid:
+        abort(400)
+        return
+
+    graph = opened_sessions.get(uid, None)
+    if graph is None:
+        graph = get_graph_with_node(root)
+        opened_sessions[uid] = graph
+    return jsonify(graph)
 
 
-@app.route('/images/<node_id>', methods=['GET'])
+@app.get('/images/<node_id>')
 def get_image(node_id):
     filename = 'coton.jpeg'
     return send_file(filename, mimetype='image/jpeg')
 
 
-@app.route('/initial/', methods=['GET', 'POST'])
-def get_initial_graph(uid=None):
-    if uid is None:
-        uid = request.args['uid']
-    result = get_centered_graph(uid, "entity.n.01")
-    return result
-
-
-@app.route('/centered/', methods=['GET', 'POST'])
-def get_centered_graph(uid=None, start_node=None):
-    if uid is None:
-        uid = request.json.get('uid')
-    if (request.json and 'start_node' in request.json) or start_node is not None:
-        if start_node is None:
-            start_node = request.json.get('start_node')
-        result = jsonify(get_graph_with_node(start_node))
-        opened_sessions[uid] = result
-        return result
-    else:
+@app.post('/centered')
+def center_graph_to():
+    json = request.json
+    uid = json['uid']
+    start_node = json['start_node']
+    if not uid:
         abort(400)
+        return
+    if not start_node:
+        start_node = root
+
+    graph = get_graph_with_node(start_node)
+    opened_sessions[uid] = graph
+    return jsonify(graph)
 
 
 @app.route('/generate', methods=['GET', 'POST'])
