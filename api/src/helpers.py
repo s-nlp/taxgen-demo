@@ -5,13 +5,13 @@ from string import punctuation
 
 
 def get_graph_with_node(start_node):
-    hyponyms = [(i.name(), 4) for i in wn.synset(start_node).hyponyms()]
-    second_hyponyms = [(j.name(), 5) for i, _ in hyponyms for j in wn.synset(i).hyponyms()]
-    co_hypernyms = [(j.name(), 2) for i, _ in hyponyms for j in wn.synset(i).hypernyms()]
+    hyponyms = [(i.name(), 7) for i in wn.synset(start_node).hyponyms()]
+    second_hyponyms = [(j.name(), 9) for i, _ in hyponyms for j in wn.synset(i).hyponyms()]
+    co_hypernyms = [(j.name(), 3) for i, _ in hyponyms for j in wn.synset(i).hypernyms()]
 
-    hypernyms = [(i.name(), 2) for i in wn.synset(start_node).hypernyms()]
+    hypernyms = [(i.name(), 3) for i in wn.synset(start_node).hypernyms()]
     second_hypernyms = [(j.name(), 1) for i, _ in hypernyms for j in wn.synset(i).hypernyms()]
-    co_hyponyms = [(j.name(), 3) for i, _ in hypernyms for j in wn.synset(i).hyponyms()]
+    co_hyponyms = [(j.name(), 5) for i, _ in hypernyms for j in wn.synset(i).hyponyms()]
 
     all_nodes = hyponyms + second_hyponyms + co_hypernyms + hypernyms + second_hypernyms + co_hyponyms
 
@@ -45,12 +45,12 @@ def _get_relations(all_nodes):
             if wn.synset(node1) in wn.synset(node2).hypernyms():
                 graph.add((node1, node2))
                 if level1 == level2:
-                    level2 += 1
+                    level2 += 2
 
             elif wn.synset(node1) in wn.synset(node2).hyponyms():
                 graph.add((node2, node1))
                 if level1 == level2:
-                    level1 += 1
+                    level1 += 2
 
             nodes[node1] = max(nodes[node1], level1)
             nodes[node2] = max(nodes[node2], level2)
