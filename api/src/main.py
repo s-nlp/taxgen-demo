@@ -57,12 +57,35 @@ def center_graph_to():
     return jsonify(graph)
 
 
-@app.route('/generate', methods=['GET', 'POST'])
-def generate_subgraph():
-    if not request.json or 'start_node' not in request.json:
+@app.post('/generate/words')
+def generate_words():
+    json = request.json
+    uid = json['uid']
+    start_node = json['start_node']
+    if not uid or not start_node:
         abort(400)
-    start_node = request.json.get('start_node')
-    return jsonify(predict_new_nodes(ft, start_node, all_lemmas=all_lemmas))
+        return
+
+    # TODO replace to generation
+    graph = get_graph_with_node(start_node)
+    opened_sessions[uid] = graph
+    return jsonify(graph)
+
+
+@app.post('/generate/relations')
+def generate_relations():
+    json = request.json
+    uid = json['uid']
+    start_node = json['start_node']
+    end_node = json['end_node']
+    if not uid or not start_node or not end_node:
+        abort(400)
+        return
+
+    # TODO replace to generation
+    graph = get_graph_with_node(start_node)
+    opened_sessions[uid] = graph
+    return jsonify(graph)
 
 
 if __name__ == '__main__':

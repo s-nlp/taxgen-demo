@@ -11,12 +11,20 @@ export interface TaxonomyViewProps {
   taxonomy: Taxonomy;
   navigateToRoot: () => void;
   navigateToWord: (id: string) => void;
-  generateWords: () => void;
+  generateWords: (id: string) => void;
+  generateRelations: (fromId: string, toId: string) => void;
   regenerateGraph: () => void;
 }
 
 export default function TaxonomyView(props: TaxonomyViewProps) {
-    const {taxonomy, navigateToRoot, navigateToWord, generateWords, regenerateGraph} = props;
+    const {
+      taxonomy,
+      navigateToRoot, 
+      navigateToWord, 
+      generateWords,
+      generateRelations,
+      regenerateGraph
+    } = props;
     const {currentWord, words, relations} = taxonomy;
 
     const definition = words.filter((w) => w.id === currentWord).map((w) => w.definition)[0];
@@ -40,7 +48,11 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
   
       const edges = new DataSet<any>(
         relations.map((r) => {
-           return {from: r.parent, to: r.child};
+           return {
+             id: r.parent + '_' + r.child,
+             from: r.parent,
+             to: r.child
+            };
         })
       );
   
@@ -82,12 +94,17 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       network.on('doubleClick', (e) => {
         const id = e.nodes[0];
         if (!id) {
+          const eid = e.edges[0];
+          if (eid) {
+            const [fromId, toId] = eid.split("_");
+            generateRelations(fromId, toId);
+          }
           return;
         }
         if (id !== currentWord) {
           navigateToWord(id);
         } else {
-          generateWords();
+          generateWords(id);
         }
       });
   
@@ -96,7 +113,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
         network.off('doubleClick');
         network.destroy();
       }
-    }, [currentWord, words, relations, navigateToWord, generateWords]);
+    }, [currentWord, words, relations, navigateToWord, generateWords, generateRelations]);
   
     return (<>
       <h1>

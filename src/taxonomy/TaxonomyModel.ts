@@ -69,22 +69,47 @@ export default function TaxonomyModel() {
         return await response.json();
     }
 
-    function generateWords() {
-        setTimeout(() => {
-            const prev = taxonomy$.value;
-            const newId = (prev.words.length + 1).toString();
-            taxonomy$.next({
-                currentWord: prev.currentWord,
-                words: [
-                    ...prev.words,
-                    {id: newId, word: `word ${newId}`, level: 10, lemmas: [], definition: ''}
-                ],
-                relations: [
-                    ...prev.relations,
-                    {parent: prev.currentWord, child: newId}
-                ]
-            });
-        }, 500);
+    function generateWords(id: string) {
+        setTimeout(async () => {
+            taxonomy$.next(await fetchGeneratedGraphWords(id));
+        });
+    }
+
+    async function fetchGeneratedGraphWords(id: string) {
+        const body = JSON.stringify({
+            uid: token,
+            start_node: id
+        });
+        const response = await fetch('/api/generate/words', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        });
+        return await response.json();
+    }
+
+    function generateRelations(fromId: string, toId: string) {
+        setTimeout(async () => {
+            taxonomy$.next(await fetchGeneratedGraphRelations(fromId, toId));
+        });
+    }
+
+    async function fetchGeneratedGraphRelations(fromId: string, toId: string) {
+        const body = JSON.stringify({
+            uid: token,
+            start_node: fromId,
+            end_node: toId
+        });
+        const response = await fetch('/api/generate/relations', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body
+        });
+        return await response.json();
     }
 
     function regenerateGraph() {
@@ -99,6 +124,7 @@ export default function TaxonomyModel() {
         navigateToRoot,
         navigateToWord,
         generateWords,
+        generateRelations,
         regenerateGraph
     };
 }

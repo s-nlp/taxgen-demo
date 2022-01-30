@@ -15,6 +15,7 @@ export default function TaxonomyController() {
             navigateToRoot={model.navigateToRoot}
             navigateToWord={model.navigateToWord}
             generateWords={model.generateWords}
+            generateRelations={model.generateRelations}
             regenerateGraph={model.regenerateGraph}/>
     );
 }
