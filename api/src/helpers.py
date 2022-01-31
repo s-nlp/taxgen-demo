@@ -73,6 +73,6 @@ def get_level_and_start_name(graph, start_node):
     for word in graph['words']:
         if word['id'] == start_node:
             level = word['level'] + 1
-            start_name = word['name']
+            start_name = word['word']
             return level, start_name
     return None, None
