@@ -1,7 +1,5 @@
 from collections import defaultdict
-
 from nltk.corpus import wordnet as wn
-from string import punctuation
 
 
 def get_graph_with_node(start_node):
@@ -58,7 +56,23 @@ def _get_relations(all_nodes):
     return nodes, [{'parent': parent, 'child': child} for (parent, child) in graph]
 
 
-def predict_new_nodes(fasttext_model, start_node, all_lemmas):
-    word = [i.name() for i in wn.synset(start_node).lemmas()][0]
-    return [i[1] for i in fasttext_model.get_nearest_neighbors(word, 100)
-            if i[1].lower().strip(punctuation) not in all_lemmas and word not in i[1]][:10]
+def generate_new_node(graph, start_node, end_node=None):
+    level, start_name = get_level_and_start_name(graph, start_node)
+    new_word = {
+            'id': "node_X",
+            'word': "generate node",
+            'level': level,
+            'definition': f"a member of {start_name} class",
+            'lemmas': [],
+            }
+    graph["words"].append(new_word)
+    return graph
+
+
+def get_level_and_start_name(graph, start_node):
+    for word in graph['words']:
+        if word['id'] == start_node:
+            level = word['level'] + 1
+            start_name = word['name']
+            return level, start_name
+    return None, None

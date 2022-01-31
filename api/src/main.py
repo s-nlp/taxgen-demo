@@ -1,12 +1,8 @@
 #!flask/bin/python
 from flask import Flask, jsonify, request, abort, send_file
-import fasttext
 import uuid
 from nltk.corpus import wordnet as wn
-from helpers import get_graph_with_node, predict_new_nodes
-
-
-ft = fasttext.load_model("cc.en.300.bin")
+from helpers import get_graph_with_node, generate_new_node
 
 all_lemmas = list(wn.all_lemma_names('n'))
 app = Flask(__name__)
@@ -66,8 +62,8 @@ def generate_words():
         abort(400)
         return
 
-    # TODO replace to generation
-    graph = get_graph_with_node(start_node)
+    graph = opened_sessions[uid]
+    graph = generate_new_node(graph, start_node)
     opened_sessions[uid] = graph
     return jsonify(graph)
 
@@ -82,8 +78,8 @@ def generate_relations():
         abort(400)
         return
 
-    # TODO replace to generation
-    graph = get_graph_with_node(start_node)
+    graph = opened_sessions[uid]
+    graph = generate_new_node(graph, start_node, end_node)
     opened_sessions[uid] = graph
     return jsonify(graph)
 
