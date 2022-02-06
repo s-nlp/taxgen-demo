@@ -11,6 +11,7 @@ export interface Word {
     level: number;
     definition: string;
     lemmas: string[];
+    generated: boolean;
 }
 
 export interface Relation {

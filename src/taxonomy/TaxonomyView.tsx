@@ -1,16 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataSet } from "vis-data";
 import { Network } from "vis-network/standalone/esm/vis-network";
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import { Taxonomy } from "./TaxonomyDTO";
 
 export interface TaxonomyViewProps {
   taxonomy: Taxonomy;
   navigateToRoot: () => void;
   navigateToWord: (id: string) => void;
+  navigateToSearch: (search: string) => void;
   generateWords: (id: string) => void;
   generateRelations: (fromId: string, toId: string) => void;
   regenerateGraph: () => void;
@@ -21,6 +24,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       taxonomy,
       navigateToRoot, 
       navigateToWord, 
+      navigateToSearch,
       generateWords,
       generateRelations,
       regenerateGraph
@@ -40,7 +44,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           return {
             id: w.id,
             label: w.word,
-            color: (w.id === currentWord) ? '#8cffdd' : '#ccd1ff',
+            color: (w.id === currentWord) ? '#8cffdd' : (w.generated ? '#9effff' : '#ccd1ff'),
             level: w.level
           };
         })
@@ -49,7 +53,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       const edges = new DataSet<any>(
         relations.map((r) => {
            return {
-             id: r.parent + '_' + r.child,
+             id: r.parent + '$$$' + r.child,
              from: r.parent,
              to: r.child
             };
@@ -96,7 +100,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
         if (!id) {
           const eid = e.edges[0];
           if (eid) {
-            const [fromId, toId] = eid.split("_");
+            const [fromId, toId] = eid.split('$$$');
             generateRelations(fromId, toId);
           }
           return;
@@ -115,6 +119,8 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
       }
     }, [currentWord, words, relations, navigateToWord, generateWords, generateRelations]);
   
+    const [search, setSearch] = useState('');
+
     return (<>
       <h1>
         Taxonomy
@@ -125,6 +131,12 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
         </Col>
         <Col xs={1}>
           <Button onClick={regenerateGraph}>Back to original graph</Button>
+        </Col>
+        <Col xs={3}>
+          <InputGroup className="mb-3">
+            <Form.Control type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Button onClick={() => {navigateToSearch(search)}}>Move to</Button>
+          </InputGroup>
         </Col>
       </Row>
       <Row>

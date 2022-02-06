@@ -14,6 +14,7 @@ export default function TaxonomyController() {
         <TaxonomyView taxonomy={taxonomy}
             navigateToRoot={model.navigateToRoot}
             navigateToWord={model.navigateToWord}
+            navigateToSearch={model.navigateToSearch}
             generateWords={model.generateWords}
             generateRelations={model.generateRelations}
             regenerateGraph={model.regenerateGraph}/>

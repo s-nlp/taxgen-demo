@@ -54,6 +54,13 @@ export default function TaxonomyModel() {
         });
     }
 
+    function navigateToSearch(search: string) {
+        setTimeout(async () => {
+            const id = await fetchSearch(search);
+            taxonomy$.next(await fetchGraphCenteredToWord(id));
+        });
+    }
+
     async function fetchGraphCenteredToWord(id: string | null) {
         const body = JSON.stringify({
             uid: token,
@@ -66,6 +73,11 @@ export default function TaxonomyModel() {
             },
             body
         });
+        return await response.json();
+    }
+
+    async function fetchSearch(search: string) {
+        const response = await fetch('/api/search_node?node_name=' + search);
         return await response.json();
     }
 
@@ -123,6 +135,7 @@ export default function TaxonomyModel() {
         taxonomy$,
         navigateToRoot,
         navigateToWord,
+        navigateToSearch,
         generateWords,
         generateRelations,
         regenerateGraph
