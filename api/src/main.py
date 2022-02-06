@@ -35,6 +35,13 @@ def get_current_graph():
 def get_image(node_id):
     filename = 'coton.jpeg'
     return send_file(filename, mimetype='image/jpeg')
+    
+    
+@app.get('/search_node')
+def search_node():
+    node_name = request.args['node_name']
+    #TODO: check node
+    return jsonify("cat.n.01")
 
 
 @app.post('/centered')

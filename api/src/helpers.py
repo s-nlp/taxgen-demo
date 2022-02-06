@@ -1,3 +1,4 @@
+import uuid
 from collections import defaultdict
 from nltk.corpus import wordnet as wn
 
@@ -24,10 +25,12 @@ def get_graph_with_node(start_node):
             'level': level, 
             'definition': wn.synset(node).definition(), 
             'lemmas': [i.name().replace("_", " ") for i in wn.synset(node).lemmas()],
+            'generated': False
             }
             for (node, level) in nodes.items()
         ],
-        'relations': relations
+        'relations': relations,
+        
     }
 
 
@@ -59,13 +62,17 @@ def _get_relations(all_nodes):
 def generate_new_node(graph, start_node, end_node=None):
     level, start_name = get_level_and_start_name(graph, start_node)
     new_word = {
-            'id': "node_X",
-            'word': "generate node",
+            'id': str(uuid.uuid4()),
+            'word': "node_X",
             'level': level,
             'definition': f"a member of {start_name} class",
             'lemmas': [],
+            'generated': True
             }
     graph["words"].append(new_word)
+    graph["relations"].append({'parent': start_node, 'child': new_word['id']})
+    if end_node is not None:
+        graph["relations"].append({'child': end_node, 'parent': new_word['id']})
     return graph
 
 
