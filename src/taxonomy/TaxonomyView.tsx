@@ -136,8 +136,8 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
         </Col>
         <Col xs={3}>
           <InputGroup className="mb-3">
-            <Form.Control  style={{"paddingRight": "20px", "paddingLeft": "20px"} as React.CSSProperties} type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA"} as React.CSSProperties} onClick={() => {navigateToSearch(search)}}>Move to</Button>
+            <Form.Control type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Button style={{"backgroundColor": "#008CBA", "borderColor": "#008CBA", "paddingLeft": "10px !important" } as React.CSSProperties} onClick={() => {navigateToSearch(search)}}>Move to</Button>
           </InputGroup>
         </Col>
       </Row>
