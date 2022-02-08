@@ -122,20 +122,22 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
     const [search, setSearch] = useState('');
 
     return (<>
-      <h1>
-        Taxonomy
-      </h1>
+      <h2>
+        <br/>
+      WordNet3.0 vizualization for candidate-free taxonomy enrichment
+      <br/><br/>
+      </h2>
       <Row>
         <Col xs={1}>
-          <Button onClick={navigateToRoot}>Back to root</Button>
+          <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" } as React.CSSProperties} onClick={navigateToRoot}>Back to root</Button>
         </Col>
         <Col xs={1}>
-          <Button onClick={regenerateGraph}>Back to original graph</Button>
+          <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" }as React.CSSProperties} onClick={regenerateGraph}>Reset graph</Button>
         </Col>
         <Col xs={3}>
           <InputGroup className="mb-3">
-            <Form.Control type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Button onClick={() => {navigateToSearch(search)}}>Move to</Button>
+            <Form.Control  style={{"paddingRight": "20px", "paddingLeft": "20px"} as React.CSSProperties} type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
+            <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA"} as React.CSSProperties} onClick={() => {navigateToSearch(search)}}>Move to</Button>
           </InputGroup>
         </Col>
       </Row>
