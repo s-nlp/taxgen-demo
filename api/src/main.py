@@ -2,7 +2,7 @@
 from flask import Flask, jsonify, request, abort, send_file
 import uuid
 from nltk.corpus import wordnet as wn
-from helpers import get_graph_with_node, generate_new_node
+from helpers import get_graph_with_node, generate_new_node, check_node_name
 
 all_lemmas = list(wn.all_lemma_names('n'))
 app = Flask(__name__)
@@ -40,8 +40,8 @@ def get_image(node_id):
 @app.get('/search_node')
 def search_node():
     node_name = request.args['node_name']
-    #TODO: check node
-    return jsonify("cat.n.01")
+    node_name = check_node_name(node_name)
+    return jsonify(node_name)
 
 
 @app.post('/centered')

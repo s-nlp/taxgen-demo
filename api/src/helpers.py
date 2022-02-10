@@ -1,6 +1,7 @@
 import uuid
 from collections import defaultdict
 from nltk.corpus import wordnet as wn
+from nltk.corpus.reader.wordnet import WordNetError
 
 
 def get_graph_with_node(start_node):
@@ -83,3 +84,15 @@ def get_level_and_start_name(graph, start_node):
             start_name = word['word']
             return level, start_name
     return None, None
+
+
+def check_node_name(name):
+    if '.n.' in name:
+        try:
+            return wn.synset(name).name()
+        except WordNetError as e:
+            print(f"Synset not found: {name}")
+    possible_synsets = wn.synsets(name, pos='n')
+    if len(possible_synsets) == 1 and possible_synsets[0].pos() == 'n':
+        return possible_synsets[0].name()
+    return None
