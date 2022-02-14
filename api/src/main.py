@@ -33,7 +33,9 @@ def get_current_graph():
 
 @app.get('/images/<node_id>')
 def get_image(node_id):
-    offset = wn.synset(node_id).offset()
+    offset = str(wn.synset(node_id).offset())
+    if len(offset) < 8:
+        offset = "0"*(8-len(offset)) + offset
     filename = f'images/n{offset}.JPEG'
     return send_file(filename, mimetype='image/jpeg')
     

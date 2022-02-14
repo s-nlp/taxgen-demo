@@ -56,8 +56,17 @@ export default function TaxonomyModel() {
 
     function navigateToSearch(search: string) {
         setTimeout(async () => {
-            const id = await fetchSearch(search);
-            taxonomy$.next(await fetchGraphCenteredToWord(id));
+            if (search.length) {
+                const id = await fetchSearch(search);
+                if (id.length) {
+                    taxonomy$.next(await fetchGraphCenteredToWord(id));
+                } else {
+                    return false;
+                }
+                
+            } else {
+                return false;
+            }
         });
     }
 
@@ -124,10 +133,14 @@ export default function TaxonomyModel() {
         return await response.json();
     }
 
-    function regenerateGraph() {
+    function regenerateGraph(currentWord: string) {
         setTimeout(async () => {
             localStorage.removeItem('token');
-            await init();
+            const tok = await generateToken();
+            localStorage.setItem('token', tok);
+            token = tok;
+            const graph = await fetchGraphCenteredToWord(currentWord);
+            taxonomy$.next(graph);
         });
     }
 

@@ -16,7 +16,7 @@ export interface TaxonomyViewProps {
   navigateToSearch: (search: string) => void;
   generateWords: (id: string) => void;
   generateRelations: (fromId: string, toId: string) => void;
-  regenerateGraph: () => void;
+  regenerateGraph: (id: string) => void;
 }
 
 export default function TaxonomyView(props: TaxonomyViewProps) {
@@ -44,6 +44,8 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           return {
             id: w.id,
             label: w.word,
+            shape: "circularImage", 
+            image: `/api/images/${w.word}`,
             color: (w.id === currentWord) ? '#8cffdd' : (w.generated ? '#9effff' : '#ccd1ff'),
             level: w.level
           };
@@ -111,6 +113,28 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           generateWords(id);
         }
       });
+
+      network.on("afterDrawing", function(ctx) {
+        var srcCanvas = ctx.canvas
+        var destinationCanvas = document.createElement("canvas");
+        destinationCanvas.width = srcCanvas.width;
+        destinationCanvas.height = srcCanvas.height;
+
+        var destCtx = destinationCanvas.getContext('2d')!;
+
+        //create a rectangle with the desired color
+        destCtx.fillStyle = "#FFFFFF";
+        destCtx.fillRect(0,0,srcCanvas.width,srcCanvas.height);
+
+        //draw the original canvas onto the destination canvas
+        destCtx.drawImage(srcCanvas, 0, 0);
+
+        //finally use the destinationCanvas.toDataURL() method to get the desired output;
+        destinationCanvas.toDataURL();
+        
+        const element = document.getElementById('canvasImg') as HTMLLinkElement;
+        element.href = destinationCanvas.toDataURL();
+      })
   
       return () => {
         network.off('hold');
@@ -132,13 +156,18 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" } as React.CSSProperties} onClick={navigateToRoot}>Back to root</Button>
         </Col>
         <Col xs={1}>
-          <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" }as React.CSSProperties} onClick={regenerateGraph}>Reset graph</Button>
+          <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" }as React.CSSProperties} onClick={() => regenerateGraph(currentWord)}>Reset graph</Button>
         </Col>
         <Col xs={3}>
           <InputGroup className="mb-3">
             <Form.Control type="text" placeholder="word" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Button style={{"backgroundColor": "#008CBA", "borderColor": "#008CBA", "paddingLeft": "10px !important" } as React.CSSProperties} onClick={() => {navigateToSearch(search)}}>Move to</Button>
+            <Button style={{"backgroundColor": "#008CBA", "borderColor": "#008CBA", "paddingLeft": "10px !important"} as React.CSSProperties} onClick={() => {navigateToSearch(search)}}>Move to</Button>
           </InputGroup>
+        </Col>
+        <Col xs={2}>
+          <a id="canvasImg" download="schema.png">
+            <Button style={{ "backgroundColor": "#008CBA", "borderColor": "#008CBA" }as React.CSSProperties}>Download image</Button>
+          </a>
         </Col>
       </Row>
       <Row>
@@ -148,7 +177,7 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
         <Col>
           {currentWord ?
             <Card>
-              <Card.Img variant="top" src={`/api/images/${currentWord}.jpg`}/>
+              <Card.Img variant="top" src={`/api/images/${currentWord}`}/>
               <Card.Body>
                 <Card.Title>{currentWord}</Card.Title>
                 <Card.Text>

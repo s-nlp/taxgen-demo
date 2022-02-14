@@ -35,6 +35,14 @@ def get_graph_with_node(start_node):
     }
 
 
+def get_image_name(node_id):
+    offset = str(wn.synset(node_id).offset())
+    if len(offset) < 8:
+        offset = "0"*(8-len(offset)) + offset
+    filename = f'images/n{offset}.JPEG'
+    return filename
+
+
 def _get_relations(all_nodes):
     all_nodes = sorted(all_nodes, key=lambda x: x[1])
     graph = set()
@@ -95,4 +103,4 @@ def check_node_name(name):
     possible_synsets = wn.synsets(name, pos='n')
     if len(possible_synsets) == 1 and possible_synsets[0].pos() == 'n':
         return possible_synsets[0].name()
-    return None
+    return ""
