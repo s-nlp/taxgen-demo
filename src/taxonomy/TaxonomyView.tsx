@@ -85,7 +85,10 @@ export default function TaxonomyView(props: TaxonomyViewProps) {
           }
         },
         physics: {
-          enabled: false
+          "barnesHut": {
+            "springConstant": 0,
+            "avoidOverlap": 0.5
+          }
         },
         interaction: {
           dragNodes: false,
